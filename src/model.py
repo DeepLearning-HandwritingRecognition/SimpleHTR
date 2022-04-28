@@ -4,11 +4,14 @@ from typing import List, Tuple
 
 import numpy as np
 import tensorflow as tf
+from spellchecker import SpellChecker
 
 from dataloader_iam import Batch
 
 # Disable eager mode
 tf.compat.v1.disable_eager_execution()
+spell=SpellChecker()
+
 
 
 class DecoderType:
@@ -282,6 +285,37 @@ class Model:
 
         # map labels (numbers) to character string
         texts = self.decoder_output_to_text(decoded, num_batch_elements)
+
+        sentence =["false"]
+        tempSentence=""
+
+        for word in range(len(texts)):
+            if texts[word][0].isupper():
+                texts[word]=spell.correction(texts[word])
+                texts[word]=texts[word].capitalize()
+            else:
+                texts[word]=spell.correction(texts[word])
+            sentence.append(texts[word])
+
+
+            # if texts[word]== '.' or texts[word]== '!' or texts[word]== '?' and sentence[0]=="true":
+            #     tempGrammarSentence=str(gf.correct(tempSentence, max_candidates=1))
+            #     editedSentence=gf.get_edits(tempSentence, tempGrammarSentence)
+            #
+            #     if (tempGrammarSentence!=tempSentence):
+            #         print("Im here")
+            #         print(editedSentence)
+            #
+            #     # for edit in editedSentence:
+            #     #     print(edit)
+            #     #     if edit[1] in sentence[(edit[2]+1)]:
+            #     #         print("Edit: "+edit[1]+ " list: "+sentence[(edit[2]+1)])
+            #     #         print(sentence[(edit[2]+1)][1])
+            #     #         texts[sentence[(edit[2]+1)][1]]=edit[1]
+            #     editedSentence=""
+            #     tempSentence=""
+
+
 
         # feed RNN output and recognized text into CTC loss to compute labeling probability
         probs = None
