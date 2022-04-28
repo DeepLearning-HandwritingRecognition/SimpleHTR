@@ -9,7 +9,7 @@ import random
 
 #for this program just
 
-outputDirName = "banana"
+outputDirName = ""
 parentDirectory = os.getcwd()
 numTransformations = 1
 
