@@ -5,6 +5,8 @@ from typing import Tuple, List
 import cv2
 import editdistance
 from path import Path
+from deslant_img import deslant_img
+import matplotlib.pyplot as plt
 
 from dataloader_iam import DataLoaderIAM, Batch
 from model import Model, DecoderType
@@ -123,9 +125,14 @@ def infer(model: Model, fn_img: Path) -> None:
     """Recognizes text in image provided by file path."""
     img = cv2.imread(fn_img, cv2.IMREAD_GRAYSCALE)
     assert img is not None
+    
+    res = deslant_img(img)
+
+    plt.imshow(res.img)
+    plt.show()
 
     preprocessor = Preprocessor(get_img_size(), dynamic_width=True, padding=16)
-    img = preprocessor.process_img(img)
+    img = preprocessor.process_img(res.img)
 
     batch = Batch([img], None, 1)
     recognized, probability = model.infer_batch(batch, True)
